@@ -8,7 +8,7 @@ Seiring meningkatnya kompleksitas data pelanggan dan kebutuhan akan evaluasi ris
 
 [1] M. A. Khan, S. A. Khan, and A. A. Khan, “Machine Learning-Based Regression Framework to Predict Health Insurance Premiums,” *Healthcare*, vol. 10, no. 7, pp. 1–15, 2022. https://doi.org/10.3390/healthcare10071288
 
-Dataset yang digunakan dalam proyek ini diambil dari Kaggle: https://www.kaggle.com/datasets/mirichoi0218/insurance
+
 
 ## Business Understanding
 
@@ -31,12 +31,14 @@ Dataset yang digunakan dalam proyek ini diambil dari Kaggle: https://www.kaggle.
 
 
 ## Data Understanding
+Dataset yang digunakan dalam proyek ini diambil dari Kaggle: https://www.kaggle.com/datasets/mirichoi0218/insurance
+
 Dataset yang digunakan dalam proyek ini merupakan kumpulan data individu di Amerika Serikat yang berisi informasi yang berkaitan dengan premi asuransi kesehatan. Data ini banyak digunakan dalam konteks prediksi biaya klaim asuransi berdasarkan karakteristik demografis dan gaya hidup seseorang. Dataset terdiri dari 1.338 baris data (sampel) dan 7 kolom, yang mencakup:
 - 6 fitur (input): karakteristik individu yang mungkin memengaruhi biaya asuransi.
 - 1 target (output): biaya asuransi atau `charges`, yaitu jumlah yang harus dibayar individu untuk layanan asuransi kesehatan.
 
 
-### Fitur:
+### Deskripsi Fitur:
 - `age`: Usia individu (numeric)
 - `sex`: Jenis kelamin (male/female)
 - `bmi`: Indeks massa tubuh (numeric)
@@ -57,25 +59,26 @@ Untuk memahami kualitas dan karakteristik data, dilakukan pemeriksaan awal terha
 Exploratory Data Analysis (EDA) dilakukan untuk memahami karakteristik dan hubungan antar variabel dalam dataset. EDA mencakup analisis statistik dasar serta visualisasi data untuk membantu mengidentifikasi pola, anomali, dan relasi antar fitur. Berikut langkah-langkah yang dilakukan:
 
 1. Analisis Univariat (Satu Variabel)
-- Fitur numerik (`age`, `bmi`, `children`, `charges`):
-    - Digunakan histogram dan boxplot untuk melihat sebaran nilai dan mendeteksi outlier.
-    - Ditemukan bahwa `charges` memiliki distribusi skewed (miring ke kanan), menunjukkan bahwa sebagian besar individu memiliki biaya asuransi lebih rendah, sementara sebagian kecil memiliki biaya sangat tinggi.
-    - Fitur `bmi` juga menunjukkan nilai ekstrem pada beberapa sampel.
-
 - Fitur kategorikal (`sex`, `smoker`, `region`):
     - Digunakan bar chart untuk melihat proporsi kategori.
     - Terlihat distribusi tidak seimbang, misalnya jumlah perokok jauh lebih sedikit dibandingkan non-perokok.
 
-2. Analisis Multivariat (Hubungan Antar Variabel)
-- Korelasi antar fitur numerik dengan `charges`:
-    - Menggunakan heatmap korelasi untuk melihat hubungan antar variabel numerik.
-    - Fitur `age`, `bmi`, dan `smoker` memiliki korelasi yang cukup kuat dengan `charges`.
+- Fitur numerik (`age`, `bmi`, `children`, `charges`):
+    - Digunakan boxplot untuk melihat sebaran nilai.
+    - Ditemukan bahwa `age`, `children`, dan `charges`, memiliki distribusi skewed (miring ke kanan).
 
+2. Analisis Multivariat (Hubungan Antar Variabel)
 - Korelasi antar fitur kategorikal dengan `charges`:
     - Menggunakan bar plot untuk melihat rata-rata charges per kategori.
     - Terlihat bahwa:
         - Perokok (`smoker`=`yes`) memiliki biaya asuransi jauh lebih tinggi.
         - Wilayah (`region`) dan gender (`sex`) tidak menunjukkan perbedaan signifikan terhadap `charges`.
+
+- Korelasi antar fitur numerik dengan `charges`:
+    - Menggunakan heatmap korelasi untuk melihat hubungan antar variabel numerik.
+    - Fitur `age`, `bmi`, dan `smoker` memiliki korelasi yang cukup kuat dengan `charges`.
+
+
 
 ## Data Preparation
 Tahapan ini bertujuan untuk mempersiapkan data agar siap digunakan oleh algoritma machine learning. Seluruh langkah dilakukan secara sistematis berdasarkan karakteristik data yang telah dianalisis sebelumnya.
@@ -106,52 +109,68 @@ Fitur numerikal (`age`, `bmi`, dan `children`) memiliki skala yang berbeda-beda,
 
 
 
-## Modeling
-Tiga model yang digunakan:
+## Model Development
 
-1. **Linear Regression**
-Linear Regression adalah salah satu metode paling sederhana dan paling dikenal dalam machine learning. Model ini digunakan sebagai baseline atau titik awal pembanding dengan model lain yang lebih kompleks.
+### Model 1 — **Linear Regression**
 
-- Cara kerja: Model ini mencoba menggambar garis lurus terbaik yang merepresentasikan hubungan antara fitur (seperti usia, BMI, dll.) dengan target (charges). Model ini mengasumsikan bahwa hubungan antara semua fitur dengan target bersifat linear atau lurus.
+#### Cara Kerja  
+Linear Regression adalah algoritma regresi paling sederhana yang berusaha memodelkan hubungan antara variabel input (fitur) dan output (target) dengan sebuah garis lurus. Model ini menghitung koefisien linear dari setiap fitur untuk meminimalkan selisih kuadrat antara nilai aktual dan nilai prediksi.
 
-- Kelebihan:
-    - Mudah dipahami dan dijelaskan.
-    - Cepat saat dijalankan, bahkan untuk dataset yang cukup besar.
+#### Parameter
+Model digunakan dengan parameter **default** dari `sklearn.linear_model.LinearRegression`, yaitu:
+- `fit_intercept=True`: model menghitung intercept (titik potong).
+- `normalize='deprecated'`: normalisasi tidak dilakukan (fitur telah distandardisasi sebelumnya).
+- `n_jobs=None`: pelatihan dilakukan tanpa paralelisasi eksplisit.
 
-- Kekurangan:
-    - Kurang akurat jika data memiliki pola hubungan yang tidak lurus (non-linear).
+#### Kelebihan
+- Cepat, sederhana, dan mudah diinterpretasi.
+- Cocok sebagai baseline model.
 
-
-2. **Random Forest Regressor**
-Random Forest adalah model yang terdiri dari banyak pohon keputusan (decision trees) yang digabung menjadi satu. Model ini memiliki parameter yang disesuaikan, seperti:
-- `n_estimators=50`: jumlah pohon yang digunakan.
-- `max_depth=16`: kedalaman maksimal setiap pohon untuk mencegah overfitting.
-
-- Cara kerja: Setiap pohon mencoba membuat prediksi berdasarkan bagian kecil dari data. Hasil akhir dari model merupakan rata-rata dari semua pohon, sehingga lebih stabil dan akurat. Model ini tidak mengasumsikan adanya hubungan linear, sehingga bisa menangkap pola yang kompleks.
-
-- Kelebihan:
-    - Sangat baik dalam menangani data dengan pola yang rumit.
-    - Tahan terhadap overfitting karena prediksi berasal dari banyak pohon yang berbeda.
-
-- Kekurangan:
-    - Lebih lambat dibanding Linear Regression.
-    - Kurang transparan (lebih sulit dijelaskan secara sederhana).
+#### Kekurangan
+- Kurang akurat jika hubungan antar fitur tidak linear.
+- Rentan terhadap outlier.
 
 
-3. **Gradient Boosting Regressor**
-Gradient Boosting adalah metode boosting, yaitu teknik di mana model dibangun secara bertahap untuk memperbaiki kesalahan dari model sebelumnya. Parameter yang digunakan dalam proyek ini:
-- `n_estimators=100`: Model membangun 100 pohon secara bertahap.
-- `learning_rate=0.1`: Mengontrol seberapa besar kontribusi setiap pohon baru terhadap model keseluruhan. Semakin kecil, semakin halus perbaikan model.
-- `max_depth=4`: Kedalaman maksimum setiap pohon. Ini membantu membatasi kompleksitas model agar tidak overfitting.
+### Model 2 — **Random Forest Regressor**
 
-- Cara kerja: Alih-alih membangun semua pohon sekaligus seperti Random Forest, Gradient Boosting membangun pohon satu per satu. Setiap pohon baru mencoba memperbaiki kesalahan yang dibuat oleh pohon sebelumnya.
+#### Cara Kerja  
+Random Forest adalah algoritma ensemble yang terdiri dari banyak decision tree. Setiap pohon dibangun dari subset data dan subset fitur (teknik bagging), dan hasil akhir merupakan rata-rata prediksi dari seluruh pohon. Pendekatan ini mengurangi overfitting dan meningkatkan akurasi.
 
-- Kelebihan:
-    - Mampu menghasilkan prediksi yang sangat akurat untuk data tabular.
+#### Parameter
+Model digunakan dengan konfigurasi sebagai berikut:
+- `n_estimators=50`: jumlah pohon keputusan yang digunakan.
+- `max_depth=16`: kedalaman maksimum setiap pohon untuk mencegah overfitting.
+- `random_state=55`: untuk menghasilkan hasil yang konsisten.
+- `n_jobs=-1`: memanfaatkan semua inti CPU untuk pelatihan secara paralel.
 
-- Kekurangan:
-    - Lebih sensitif terhadap overfitting jika tidak dikontrol dengan parameter yang tepat.
-    - Proses pelatihan bisa lebih lambat karena model dibangun secara bertahap.
+#### Kelebihan
+- Akurat pada data dengan pola kompleks.
+- Tahan terhadap overfitting karena menggunakan banyak pohon.
+
+#### Kekurangan
+- Pelatihan lebih lambat dibanding model linear.
+- Kurang transparan (sulit diinterpretasi).
+
+
+### Model 3 — **Gradient Boosting Regressor**
+
+#### Cara Kerja  
+Gradient Boosting adalah teknik boosting yang membangun model secara bertahap, di mana setiap pohon berikutnya berusaha memperbaiki kesalahan dari model sebelumnya. Model ini mengoptimalkan fungsi loss dengan cara iteratif untuk menghasilkan prediksi yang lebih akurat.
+
+#### Parameter
+Model digunakan dengan konfigurasi:
+- `n_estimators=100`: jumlah total pohon.
+- `learning_rate=0.1`: tingkat kontribusi masing-masing pohon terhadap model akhir.
+- `max_depth=4`: kedalaman maksimum setiap pohon.
+- `random_state=55`: untuk memastikan replikasi hasil.
+
+#### Kelebihan
+- Sering kali menghasilkan prediksi yang sangat akurat, terutama pada data tabular.
+- Dapat menangkap interaksi kompleks antar fitur.
+
+#### Kekurangan
+- Lebih rentan terhadap overfitting jika tidak diatur dengan baik.
+- Pelatihan lebih lambat karena model dibangun secara bertahap.
 
 
 ### Alasan Pemilihan dan Perbandingan
@@ -188,8 +207,8 @@ $$
 | Random Forest      | 1024.24     | 2396.47    |
 | Gradient Boosting  | 1608.51     | 2425.43    |
 
-- Random Forest Regressor menghasilkan MAE paling rendah pada data pelatihan dan juga cukup kompetitif pada data pengujian.
 - Linear Regression, meskipun sederhana, menghasilkan kesalahan prediksi yang lebih tinggi dibanding model lain.
+- Random Forest Regressor menghasilkan MAE paling rendah pada data pelatihan dan juga cukup kompetitif pada data pengujian.
 - Gradient Boosting memiliki performa mendekati Random Forest, namun tidak sebaik Random Forest dalam konteks dataset ini.
 
 
@@ -198,23 +217,23 @@ Dari hasil di atas, dapat disimpulkan bahwa:
 
 **Problem Statement**
 - Problem Statement 1: Bagaimana memprediksi biaya asuransi seseorang berdasarkan berbagai faktor? 
-Model berhasil dibangun dan mampu memprediksi biaya asuransi dengan tingkat kesalahan rata-rata yang dapat diterima (sekitar $2.396).
+    - Model berhasil dibangun dan mampu memprediksi biaya asuransi dengan tingkat kesalahan rata-rata yang dapat diterima (sekitar $2.396).
 - Problem Statement 2: Algoritma machine learning mana yang menghasilkan prediksi paling akurat? 
-Random Forest Regressor terbukti menjadi model dengan performa terbaik berdasarkan evaluasi metrik MAE.
+    - Random Forest Regressor terbukti menjadi model dengan performa terbaik berdasarkan evaluasi metrik MAE.
 
 **Goals**
 - Goal 1: Membangun model prediktif biaya asuransi berdasarkan data demografis dan gaya hidup. 
-Model telah dibangun dan diuji, dengan hasil evaluasi yang mendukung penggunaannya dalam konteks prediktif.
+    - Model telah dibangun dan diuji, dengan hasil evaluasi yang mendukung penggunaannya dalam konteks prediktif.
 - Goal 2: Membandingkan performa beberapa algoritma regresi dan memilih model terbaik. 
-Tiga model diuji secara adil, dan Random Forest dipilih berdasarkan hasil evaluasi kuantitatif.
+    - Tiga model diuji secara adil, dan Random Forest dipilih berdasarkan hasil evaluasi kuantitatif.
 
-Solution Statement:
+**Solution Statement**
 - Baseline model Linear Regression digunakan sebagai pembanding awal. 
-Memberikan gambaran dasar performa.
+    - Memberikan gambaran dasar performa.
 - Random Forest dan Gradient Boosting digunakan untuk meningkatkan performa. 
-Kedua model meningkatkan akurasi, dan Random Forest secara konsisten menghasilkan MAE lebih rendah.
+    - Kedua model meningkatkan akurasi, dan Random Forest secara konsisten menghasilkan MAE lebih rendah.
 - Metrik MAE digunakan untuk mengevaluasi performa model secara objektif. 
-Metrik ini telah menunjukkan keefektifan pendekatan yang diambil.
+    - Metrik ini telah menunjukkan keefektifan pendekatan yang diambil.
 
 ## Kesimpulan
 Proyek ini berhasil membangun sistem prediksi biaya asuransi kesehatan menggunakan pendekatan machine learning. Tiga algoritma regresi diuji: Linear Regression, Random Forest Regressor, dan Gradient Boosting Regressor. Berdasarkan metrik MAE, Random Forest Regressor menunjukkan performa terbaik dengan kesalahan rata-rata yang paling kecil dan stabil pada data uji. Secara bisnis, model ini memiliki dampak penting:
