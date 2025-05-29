@@ -1,13 +1,13 @@
 # Laporan Proyek Machine Learning - Muhammad Rayhan Rasyad (MC006D5Y1862)
 
 ## Domain Proyek
+Industri hiburan digital, terutama layanan streaming film dan video, mengalami lonjakan pertumbuhan signifikan dalam beberapa tahun terakhir. Di tengah membanjirnya konten yang tersedia, pengguna sering kali kesulitan menemukan film yang relevan dengan preferensi mereka. Hal ini menimbulkan kebutuhan mendesak akan sistem rekomendasi yang efektif dan personal.
 
-Pertumbuhan konten digital dan kebutuhan personalisasi mendorong banyak platform digital untuk mengembangkan sistem rekomendasi, termasuk dalam industri hiburan seperti film. Sistem ini tidak hanya membantu pengguna menemukan konten yang relevan, tetapi juga meningkatkan engagement, retensi, dan konversi bisnis.
+Sistem rekomendasi film berperan penting dalam meningkatkan kepuasan pengguna, memperpanjang durasi keterlibatan (watch time), serta mendorong loyalitas pengguna terhadap platform. Teknologi ini telah menjadi komponen inti dalam layanan seperti Netflix, YouTube, dan Disney+, yang menggunakan pendekatan berbasis machine learning untuk mempersonalisasi saran tontonan berdasarkan perilaku dan minat pengguna [1].
 
-Dalam proyek ini, dibangun sistem rekomendasi film menggunakan dua pendekatan populer: Content-Based Filtering dan Collaborative Filtering berbasis Neural Network. Pendekatan ini dipilih karena keduanya saling melengkapi — content-based efektif pada cold start, sedangkan collaborative lebih akurat pada data besar.
+Dalam proyek ini, dikembangkan sistem rekomendasi film dengan dua pendekatan utama: Content-Based Filtering, yang memanfaatkan informasi konten seperti genre untuk mencari kemiripan antarfilm, serta Collaborative Filtering berbasis Neural Network, yang menggunakan pola interaksi antara pengguna dan film untuk memberikan rekomendasi yang lebih personal. Kombinasi keduanya mampu mengatasi tantangan seperti cold start (pengguna atau item baru) dan sparsity (kekosongan data) yang sering dihadapi dalam sistem rekomendasi konvensional.
 
-Referensi:
-[1] Ricci, F., Rokach, L., & Shapira, B. (2011). Introduction to Recommender Systems Handbook. Springer.
+[1] G. Adomavicius and A. Tuzhilin, "Toward the Next Generation of Recommender Systems: A Survey of the State-of-the-Art and Possible Extensions," IEEE Transactions on Knowledge and Data Engineering, vol. 17, no. 6, pp. 734–749, Jun. 2005. https://doi.org/10.1109/TKDE.2005.99
 
 
 
@@ -97,6 +97,7 @@ Model ini merekomendasikan film berdasarkan kesamaan konten, yaitu informasi gen
 
 #### Rekomendasi
 Ketika pengguna memilih film "King Arthur: Legend of the Sword (2017)", maka hasilnya adalah:
+
 Rekomendasi untuk: King Arthur: Legend of the Sword (2017) | Genre: Action|Adventure|Drama|Fantasy
 1. Lord of the Rings: The Return of the King, The (2003) | Genre: Action|Adventure|Drama|Fantasy
 2. D-War (Dragon Wars) (2007) | Genre: Action|Adventure|Drama|Fantasy
@@ -119,6 +120,7 @@ Model ini memanfaatkan user-item interaction matrix dan dilatih menggunakan neur
 
 #### Rekomendasi
 Ketika ingin mengetahui rekomendasi yang cocok untuk seseorang pengguna tertentu, misalnya pengguna dengan ID 126379, maka akan tampil hasil berikut:
+
 Rekomendasi 10 film untuk user 126379:
 - Shawshank Redemption, The (1994)
 - Schindler's List (1993)
@@ -149,9 +151,11 @@ Tahap evaluasi bertujuan untuk mengukur performa dari sistem rekomendasi yang di
 Untuk mengevaluasi model Content-Based Filtering, digunakan metrik `Precision at K`, yaitu persentase item yang relevan di antara K rekomendasi teratas yang diberikan kepada pengguna.
 
 Formula:
-$%
-\text{Precision at K} = \frac{\text{Jumlah item relevan dalam top-K}}{K}
+
 $$
+\text{Precision at K} = \frac{\text{Jumlah item relevan dalam top-}K}{K}
+$$
+
 #### Hasil
 Dalam pengujian sederhana menggunakan input film "King Arthur: Legend of the Sword (2017)", sistem merekomendasikan 5 film dengan genre yang konsisten yaitu Action|Adventure|Drama|Fantasy. Karena genre yang dihasilkan seragam dan sesuai dengan input, dapat disimpulkan bahwa precision-nya cukup tinggi (mendekati 1).
 
@@ -160,6 +164,7 @@ Dalam pengujian sederhana menggunakan input film "King Arthur: Legend of the Swo
 Model ini memprediksi rating yang diberikan pengguna terhadap film tertentu. Oleh karena itu, digunakan metrik `Root Mean Squared Error (RMSE)` untuk mengukur seberapa jauh prediksi model dibandingkan nilai aktualnya.
 
 Formula: 
+
 $$
 \text{RMSE} = \sqrt{ \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 }
 $$
@@ -195,12 +200,10 @@ Dari hasil di atas, dapat disimpulkan bahwa:
 
 **Solution Statement**
 - Solution 1 (Content-Based Filtering) 
-
-Efektif dalam menangani cold start untuk item karena hanya membutuhkan fitur konten film, namun kurang mampu melakukan personalisasi mendalam karena tidak mempertimbangkan pola interaksi pengguna lain.
+    - Efektif dalam menangani cold start untuk item karena hanya membutuhkan fitur konten film, namun kurang mampu melakukan personalisasi mendalam karena tidak mempertimbangkan pola interaksi pengguna lain.
 
 - Solution 2 (Collaborative Filtering)
-
-Mampu menangkap preferensi kolektif pengguna dan memberikan rekomendasi yang lebih personal, namun memerlukan banyak data historis dan belum ideal untuk pengguna baru tanpa histori (cold start user).
+    - Mampu menangkap preferensi kolektif pengguna dan memberikan rekomendasi yang lebih personal, namun memerlukan banyak data historis dan belum ideal untuk pengguna baru tanpa histori (cold start user).
 
 ## Kesimpulan
 - Content-Based Filtering sangat efektif untuk rekomendasi berbasis genre, namun terbatas untuk pengguna dengan preferensi eksplisit.
